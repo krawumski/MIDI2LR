@@ -55,6 +55,11 @@ class Profile {
    void Resort(std::pair<int, bool> new_order);
    [[nodiscard]] size_t Size() const;
    void ToXmlFile(const juce::File& file);
+   struct MidiMsg {
+      rsj::MidiMessageId msgId;
+      int value;
+   }; 
+   std::vector<MidiMsg> setup_table_ {};       // List of MIDI commands to be sent once after loading profile
 
  private:
    void AddCommandForMessageI(size_t command, const rsj::MidiMessageId& message);

@@ -291,6 +291,20 @@ void MainContentComponent::paint(juce::Graphics& g)
 void MainContentComponent::MidiCmdCallback(const rsj::MidiMessage& mm)
 {
    try {
+      /* jr10feb21 Handle note off message. */
+      if (mm.message_type_byte == rsj::MessageType::kNoteOff) {
+         for (const auto& msg : profile_.setup_table_) {
+            if (msg.msgId.channel == (mm.channel+1) 
+               && msg.msgId.control_number == mm.control_number
+               && msg.msgId.msg_id_type == rsj::MessageType::kNoteOn
+               && msg.value == 1) {
+               /* jr10feb21 Send note again if the key is set to be lit (in case the controller turned it off on the note off event). */
+               midi_sender_.Send(msg.msgId, msg.value);
+               return;
+            }
+         }
+      }
+
       /* Display the MIDI parameters and add/highlight row in table corresponding to the message msg
        * is 1-based for channel, which display expects */
       const rsj::MidiMessageId msg {mm};
@@ -349,6 +363,11 @@ void MainContentComponent::ProfileChanged(
       }
       /* Send new CC parameters to MIDI Out devices */
       lr_ipc_out_.SendCommand("FullRefresh 1\n");
+
+      /* jr09feb21 Send config messages to MIDI Out device */
+      for (const auto& msg : profile_.setup_table_) {
+         midi_sender_.Send(msg.msgId, msg.value);
+      }
    }
    catch (const std::exception& e) {
       MIDI2LR_E_RESPONSE;

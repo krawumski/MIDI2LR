@@ -78,11 +78,11 @@ void MidiReceiver::handleIncomingMidiMessage(
          [[fallthrough]];
       case rsj::MessageType::kNoteOn:
       case rsj::MessageType::kPw:
+      case rsj::MessageType::kNoteOff:
          messages_.push(mess);
          break;
       case rsj::MessageType::kChanPressure:
       case rsj::MessageType::kKeyPressure:
-      case rsj::MessageType::kNoteOff:
       case rsj::MessageType::kPgmChange:
       case rsj::MessageType::kSystem:
           /* no action if other type of MIDI message */;

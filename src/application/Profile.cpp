@@ -87,9 +87,22 @@ void Profile::FromXml(const juce::XmlElement* root)
       if (!root || root->getTagName().compare("settings") != 0)
          return;
       RemoveAllRows();
+      setup_table_.clear();
       const auto* setting {root->getFirstChildElement()};
       while (setting) {
-         if (setting->hasAttribute("controller")) {
+         if (setting->getTagName().compare("setup") == 0) {
+            if (setting->hasAttribute("controller")) {
+               const rsj::MidiMessageId message {setting->getIntAttribute("channel"),
+                   setting->getIntAttribute("controller"), rsj::MessageType::kCc};
+               setup_table_.push_back(MidiMsg(message, setting->getIntAttribute("value")));
+            }
+            if (setting->hasAttribute("note")) {
+               const rsj::MidiMessageId note {setting->getIntAttribute("channel"),
+                   setting->getIntAttribute("note"), rsj::MessageType::kNoteOn};
+               setup_table_.push_back(MidiMsg(note, setting->getIntAttribute("value")));
+             }
+         }
+         else if (setting->hasAttribute("controller")) {
             const rsj::MidiMessageId message {setting->getIntAttribute("channel"),
                 setting->getIntAttribute("controller"), rsj::MessageType::kCc};
             AddRowMapped(setting->getStringAttribute("command_string").toStdString(), message);
@@ -248,6 +261,22 @@ void Profile::ToXmlFile(const juce::File& file)
       if (!message_map_.empty()) {
          /* save the contents of the command map to an xml file */
          juce::XmlElement root {"settings"};
+
+         /* jr10feb21 Write the setup definitions. */
+         for (const auto& msg : setup_table_) {
+            auto setup {std::make_unique<juce::XmlElement>("setup")};
+            setup->setAttribute("channel", msg.msgId.channel);
+            switch (msg.msgId.msg_id_type) {
+            case rsj::MessageType::kNoteOn:
+               setup->setAttribute("note", msg.msgId.control_number);
+               break;
+            case rsj::MessageType::kCc:
+               setup->setAttribute("controller", msg.msgId.control_number);
+               break;
+            }
+            setup->setAttribute("value", msg.value);
+            root.addChildElement(setup.release());
+         }
          for (const auto& [msg_id, cmd_str] : message_map_) {
             auto setting {std::make_unique<juce::XmlElement>("setting")};
             setting->setAttribute("channel", msg_id.channel);
