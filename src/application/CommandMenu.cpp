@@ -47,7 +47,7 @@ void CommandMenu::clicked(const juce::ModifierKeys& modifiers)
             /* convert 1-based to 0-based */
             ccopt.BindToControl(message_.channel - 1, message_.control_number);
             juce::DialogWindow::showModalDialog(
-                juce::translate("Adjust CC dialog"), &ccopt, nullptr, juce::Colours::white, true);
+               juce::translate("Adjust CC dialog"), &ccopt, nullptr, juce::Desktop::getInstance().getDefaultLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId), true);
             break;
          }
          case rsj::MessageType::kPw: {
@@ -112,4 +112,11 @@ void CommandMenu::clicked(const juce::ModifierKeys& modifiers)
       MIDI2LR_E_RESPONSE;
       throw;
    }
+}
+
+void CommandMenu::paintButton(juce::Graphics& g, bool isMouseOverButton, bool isButtonDown) {
+   g.setColour(findColour(juce::TextButton::textColourOnId));
+   g.drawText(getButtonText(), 10, 0, getWidth(), getHeight(), juce::Justification::centredLeft, true);
+   g.setOpacity(0.5);
+   g.drawRoundedRectangle(0, 3, getWidth(), getHeight() - 6, 6, 1);
 }

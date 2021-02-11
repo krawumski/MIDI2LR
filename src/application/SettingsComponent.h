@@ -34,8 +34,6 @@ class SettingsComponent final : public juce::Component, ResizableLayout {
    void Init();
 
  private:
-   void paint(juce::Graphics&) override;
-
    juce::GroupComponent autohide_group_ {};
    juce::GroupComponent pickup_group_ {};
    juce::GroupComponent profile_group_ {};

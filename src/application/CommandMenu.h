@@ -41,6 +41,7 @@ class CommandMenu final : public TextButtonAligned {
 
  private:
    void clicked(const juce::ModifierKeys& modifiers) override;
+   void paintButton(juce::Graphics& g, bool isMouseOverButton, bool isButtonDown) override;
 
    const CommandSet& command_set_;
    Profile& profile_;
