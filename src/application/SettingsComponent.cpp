@@ -24,9 +24,11 @@
 #include "SettingsManager.h"
 
 namespace {
-   constexpr auto kSettingsLeft {20};
-   constexpr auto kSettingsWidth {400};
-   constexpr auto kSettingsHeight {300};
+   constexpr auto kSettingsLeft     {  20 };
+   constexpr auto kSettingsMargin   {  10 };
+   constexpr auto kSettingsCtrlLeft {  30 };
+   constexpr auto kSettingsWidth    { 420 };
+   constexpr auto kSettingsHeight   { 360 };
 } // namespace
 
 SettingsComponent::SettingsComponent(SettingsManager& settings_manager)
@@ -39,25 +41,23 @@ void SettingsComponent::Init()
    try {
       setSize(kSettingsWidth, kSettingsHeight);
       pickup_group_.setText(juce::translate("Pick up"));
-      pickup_group_.setBounds(0, 0, kSettingsWidth, 100);
-      addToLayout(&pickup_group_, anchorMidLeft, anchorMidRight);
+      pickup_group_.setBounds(kSettingsMargin, kSettingsMargin, kSettingsWidth - 2*kSettingsMargin, 120);
+      addToLayout(&pickup_group_, anchorTopLeft, anchorTopRight);
       addAndMakeVisible(pickup_group_);
       pickup_label_.setFont(juce::Font {16.f, juce::Font::bold});
       pickup_label_.setText(juce::translate("Disabling the pickup mode may be better for "
                                             "touchscreen interfaces and may solve issues with "
                                             "Lightroom not picking up fast fader/knob movements"),
           juce::NotificationType::dontSendNotification);
-      pickup_label_.setBounds(kSettingsLeft, 15, kSettingsWidth - 2 * kSettingsLeft, 50);
-      addToLayout(&pickup_label_, anchorMidLeft, anchorMidRight);
+      pickup_label_.setJustificationType(juce::Justification::topLeft);
+      pickup_label_.setBounds(kSettingsLeft, kSettingsMargin+20, kSettingsWidth - 2*kSettingsLeft, 50);
+      addToLayout(&pickup_label_, anchorTopLeft, anchorTopRight);
       pickup_label_.setEditable(false);
-      pickup_label_.setColour(juce::Label::textColourId, juce::Colours::darkgrey);
       addAndMakeVisible(pickup_label_);
 
-      pickup_enabled_.setToggleState(
-          settings_manager_.GetPickupEnabled(), juce::NotificationType::dontSendNotification);
-      pickup_enabled_.setBounds(kSettingsLeft, 60, kSettingsWidth - 2 * kSettingsLeft,
-          32); //-V112
-      addToLayout(&pickup_enabled_, anchorMidLeft, anchorMidRight);
+      pickup_enabled_.setToggleState(settings_manager_.GetPickupEnabled(), juce::NotificationType::dontSendNotification);
+      pickup_enabled_.setBounds(kSettingsLeft, kSettingsMargin+pickup_label_.getHeight()+24, kSettingsWidth - 2*kSettingsLeft, 32); //-V112
+      addToLayout(&pickup_enabled_, anchorTopLeft, anchorTopRight);
       addAndMakeVisible(pickup_enabled_);
       pickup_enabled_.onClick = [this] {
          const auto pickup_state {pickup_enabled_.getToggleState()};
@@ -66,14 +66,14 @@ void SettingsComponent::Init()
       };
 
       /* profile */
+      int profile_group_top = 2 * kSettingsMargin + pickup_group_.getHeight();
       profile_group_.setText(juce::translate("Profile"));
-      profile_group_.setBounds(0, 100, kSettingsWidth, 100);
-      addToLayout(&profile_group_, anchorMidLeft, anchorMidRight);
+      profile_group_.setBounds(kSettingsMargin, profile_group_top, kSettingsWidth - 2*kSettingsMargin, 95);
+      addToLayout(&profile_group_, anchorTopLeft, anchorTopRight);
       addAndMakeVisible(profile_group_);
 
-      profile_location_button_.setBounds(
-          kSettingsLeft, 120, kSettingsWidth - 2 * kSettingsLeft, 25);
-      addToLayout(&profile_location_button_, anchorMidLeft, anchorMidRight);
+      profile_location_button_.setBounds(kSettingsCtrlLeft, profile_group_top+25, kSettingsWidth - 2* kSettingsCtrlLeft, 25);
+      addToLayout(&profile_location_button_, anchorTopLeft, anchorTopRight);
       addAndMakeVisible(profile_location_button_);
       profile_location_button_.onClick = [this] {
          juce::FileChooser chooser {juce::translate("Select Folder"),
@@ -89,36 +89,33 @@ void SettingsComponent::Init()
       };
 
       profile_location_label_.setEditable(false);
-      profile_location_label_.setBounds(kSettingsLeft, 145, kSettingsWidth - 2 * kSettingsLeft, 30);
-      addToLayout(&profile_location_label_, anchorMidLeft, anchorMidRight);
-      profile_location_label_.setColour(juce::Label::textColourId, juce::Colours::darkgrey);
+      profile_location_label_.setBounds(kSettingsLeft, profile_group_top+55, kSettingsWidth - 2*kSettingsLeft, 30);
+      addToLayout(&profile_location_label_, anchorTopLeft, anchorTopRight);
       addAndMakeVisible(profile_location_label_);
-      profile_location_label_.setText(
-          settings_manager_.GetProfileDirectory(), juce::NotificationType::dontSendNotification);
+      profile_location_label_.setText(settings_manager_.GetProfileDirectory(), juce::NotificationType::dontSendNotification);
 
       /* autohide */
+      int autohide_group_top = profile_group_top + profile_group_.getHeight() + kSettingsMargin;
       autohide_group_.setText(juce::translate("Auto hide"));
-      autohide_group_.setBounds(0, 200, kSettingsWidth, 100);
-      addToLayout(&autohide_group_, anchorMidLeft, anchorMidRight);
+      autohide_group_.setBounds(kSettingsMargin, autohide_group_top, kSettingsWidth - 2*kSettingsMargin, 100);
+      addToLayout(&autohide_group_, anchorTopLeft, anchorTopRight);
       addAndMakeVisible(autohide_group_);
 
       autohide_explain_label_.setFont(juce::Font {16.f, juce::Font::bold});
-      autohide_explain_label_.setText(juce::translate("Autohide the plugin window in x seconds, "
-                                                      "select 0 for disabling autohide"),
+      autohide_explain_label_.setText(juce::translate("Autohide the plugin window in x seconds.\n"
+                                                      "Select 0 for disabling autohide."),
           juce::NotificationType::dontSendNotification);
-      autohide_explain_label_.setBounds(kSettingsLeft, 215, kSettingsWidth - 2 * kSettingsLeft, 50);
-      addToLayout(&autohide_explain_label_, anchorMidLeft, anchorMidRight);
+      autohide_explain_label_.setJustificationType(juce::Justification::topLeft);
+      autohide_explain_label_.setBounds(kSettingsLeft, autohide_group_top+20, kSettingsWidth - 2*kSettingsLeft, 40);
+      addToLayout(&autohide_explain_label_, anchorTopLeft, anchorTopRight);
       autohide_explain_label_.setEditable(false);
       autohide_explain_label_.setFont(juce::Font {16.f, juce::Font::bold});
-      autohide_explain_label_.setColour(juce::Label::textColourId, juce::Colours::darkgrey);
       addAndMakeVisible(autohide_explain_label_);
 
-      autohide_setting_.setBounds(kSettingsLeft, 245, kSettingsWidth - 2 * kSettingsLeft, 50);
+      autohide_setting_.setBounds(kSettingsCtrlLeft, autohide_group_top+65, kSettingsWidth - 2*kSettingsCtrlLeft, 20);
       autohide_setting_.setRange(0, 10, 1);
-      autohide_setting_.setValue(
-          settings_manager_.GetAutoHideTime(), juce::NotificationType::dontSendNotification);
-
-      addToLayout(&autohide_setting_, anchorMidLeft, anchorMidRight);
+      autohide_setting_.setValue(settings_manager_.GetAutoHideTime(), juce::NotificationType::dontSendNotification);
+      addToLayout(&autohide_setting_, anchorTopLeft, anchorTopRight);
       addAndMakeVisible(autohide_setting_);
       autohide_setting_.onValueChange = [this] {
          settings_manager_.SetAutoHideTime(std::lrint(autohide_setting_.getValue()));
@@ -134,13 +131,3 @@ void SettingsComponent::Init()
    }
 }
 
-void SettingsComponent::paint(juce::Graphics& g)
-{ //-V2009 overridden method
-   try {
-      g.fillAll(juce::Colours::white); /* clear the background */
-   }
-   catch (const std::exception& e) {
-      MIDI2LR_E_RESPONSE;
-      throw;
-   }
-}

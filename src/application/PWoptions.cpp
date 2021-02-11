@@ -56,8 +56,8 @@ PWoptions::PWoptions()
    label->setFont(Font(15.00f, Font::plain).withTypefaceStyle("Regular"));
    label->setJustificationType(Justification::centredLeft);
    label->setEditable(false, false, false);
-   label->setColour(TextEditor::textColourId, Colours::black);
-   label->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+//   label->setColour(TextEditor::textColourId, Colours::black);
+//   label->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
    label->setBounds(32, 48, 150, 24);
 
@@ -79,8 +79,8 @@ PWoptions::PWoptions()
    label2->setFont(Font(15.00f, Font::plain).withTypefaceStyle("Regular"));
    label2->setJustificationType(Justification::centredLeft);
    label2->setEditable(false, false, false);
-   label2->setColour(TextEditor::textColourId, Colours::black);
-   label2->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+//   label2->setColour(TextEditor::textColourId, Colours::black);
+//   label2->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
    label2->setBounds(32, 112, 150, 24);
 
@@ -102,8 +102,8 @@ PWoptions::PWoptions()
    label3->setFont(Font(15.00f, Font::plain).withTypefaceStyle("Regular"));
    label3->setJustificationType(Justification::centredLeft);
    label3->setEditable(false, false, false);
-   label3->setColour(TextEditor::textColourId, Colours::black);
-   label3->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+//   label3->setColour(TextEditor::textColourId, Colours::black);
+//   label3->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
    label3->setBounds(32, 16, 150, 24);
 
@@ -140,8 +140,6 @@ void PWoptions::paint(Graphics& g)
 {
    //[UserPrePaint] Add your own custom painting code here..
    //[/UserPrePaint]
-
-   g.fillAll(Colours::white);
 
    //[UserPaint] Add your own custom painting code here..
    //[/UserPaint]
