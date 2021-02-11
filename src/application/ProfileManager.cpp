@@ -141,6 +141,7 @@ void ProfileManager::MidiCmdCallback(const rsj::MidiMessage& mm)
 {
    try {
       const rsj::MidiMessageId cc {mm};
+ 
       /* return if the value isn't high enough (notes may be < 1), or the command isn't a valid
        * profile-related command */
       if (controls_model_.ControllerToPlugin(mm, false) < 0.4
