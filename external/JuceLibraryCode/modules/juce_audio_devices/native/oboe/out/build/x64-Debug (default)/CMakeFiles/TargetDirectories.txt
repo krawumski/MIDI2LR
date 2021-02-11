@@ -1,0 +1,6 @@
+C:/Users/jens/source/repos/MIDI2LR/external/JuceLibraryCode/modules/juce_audio_devices/native/oboe/out/build/x64-Debug (default)/CMakeFiles/oboe.dir
+C:/Users/jens/source/repos/MIDI2LR/external/JuceLibraryCode/modules/juce_audio_devices/native/oboe/out/build/x64-Debug (default)/CMakeFiles/install/local.dir
+C:/Users/jens/source/repos/MIDI2LR/external/JuceLibraryCode/modules/juce_audio_devices/native/oboe/out/build/x64-Debug (default)/CMakeFiles/install.dir
+C:/Users/jens/source/repos/MIDI2LR/external/JuceLibraryCode/modules/juce_audio_devices/native/oboe/out/build/x64-Debug (default)/CMakeFiles/edit_cache.dir
+C:/Users/jens/source/repos/MIDI2LR/external/JuceLibraryCode/modules/juce_audio_devices/native/oboe/out/build/x64-Debug (default)/CMakeFiles/rebuild_cache.dir
+C:/Users/jens/source/repos/MIDI2LR/external/JuceLibraryCode/modules/juce_audio_devices/native/oboe/out/build/x64-Debug (default)/CMakeFiles/list_install_components.dir

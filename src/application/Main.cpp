@@ -69,7 +69,7 @@ namespace fs = std::filesystem;
 #endif
 
 namespace {
-   class LookAndFeelMIDI2LR final : public juce::LookAndFeel_V3 {
+   class LookAndFeelMIDI2LR final : public juce::LookAndFeel_V4 {
     public:
       juce::Font getTextButtonFont(juce::TextButton&, const int button_height) override
       {

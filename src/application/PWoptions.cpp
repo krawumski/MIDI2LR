@@ -141,8 +141,6 @@ void PWoptions::paint(Graphics& g)
    //[UserPrePaint] Add your own custom painting code here..
    //[/UserPrePaint]
 
-   g.fillAll(Colours::white);
-
    //[UserPaint] Add your own custom painting code here..
    //[/UserPaint]
 }

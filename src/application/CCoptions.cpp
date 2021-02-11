@@ -135,8 +135,8 @@ CCoptions::CCoptions()
    minvallabel->setFont(Font(15.00f, Font::plain).withTypefaceStyle("Regular"));
    minvallabel->setJustificationType(Justification::centredLeft);
    minvallabel->setEditable(false, false, false);
-   minvallabel->setColour(TextEditor::textColourId, Colours::black);
-   minvallabel->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+//   minvallabel->setColour(TextEditor::textColourId, Colours::black);
+//   minvallabel->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
    minvallabel->setBounds(16, 228, 150, 24);
 
@@ -145,8 +145,8 @@ CCoptions::CCoptions()
    maxvallabel->setFont(Font(15.00f, Font::plain).withTypefaceStyle("Regular"));
    maxvallabel->setJustificationType(Justification::centredLeft);
    maxvallabel->setEditable(false, false, false);
-   maxvallabel->setColour(TextEditor::textColourId, Colours::black);
-   maxvallabel->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+//   maxvallabel->setColour(TextEditor::textColourId, Colours::black);
+//   maxvallabel->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
    maxvallabel->setBounds(16, 268, 150, 24);
 
@@ -162,8 +162,8 @@ CCoptions::CCoptions()
    controlID->setFont(Font(15.00f, Font::plain).withTypefaceStyle("Regular"));
    controlID->setJustificationType(Justification::centred);
    controlID->setEditable(false, false, false);
-   controlID->setColour(TextEditor::textColourId, Colours::black);
-   controlID->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+//   controlID->setColour(TextEditor::textColourId, Colours::black);
+//   controlID->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
    //[UserPreSize]
    //[/UserPreSize]
@@ -205,7 +205,6 @@ void CCoptions::paint(Graphics& g)
    //[UserPrePaint] Add your own custom painting code here..
    //[/UserPrePaint]
 
-   g.fillAll(Colours::white);
 
    //[UserPaint] Add your own custom painting code here..
    //[/UserPaint]

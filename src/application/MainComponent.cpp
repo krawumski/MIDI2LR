@@ -36,25 +36,25 @@ namespace {
    constexpr int kMainWidth {560}; /* equals CommandTable columns total width plus 60 */
    constexpr int kMainHeight {700};
    constexpr int kMainLeft {20};
-   constexpr int kBottomSectionHeight {185};
+   constexpr int kBottomSectionHeight {100};
    constexpr int kSpaceBetweenButton {10};
    constexpr int kStandardHeight {20};
    constexpr int kFullWidth {kMainWidth - kMainLeft * 2};
    constexpr int kButtonWidth {(kFullWidth - kSpaceBetweenButton * 2) / 3};
    constexpr int kButtonXIncrement {kButtonWidth + kSpaceBetweenButton};
    constexpr int kConnectionLabelWidth = {kMainWidth - kMainLeft - 200};
-   constexpr int kTopButtonY {60};
-   constexpr int kCommandTableY {100};
+   constexpr int kTopButtonY {65};
    constexpr int kFirstButtonX {kMainLeft};
    constexpr int kSecondButtonX {kMainLeft + kButtonXIncrement};
    constexpr int kThirdButtonX {kMainLeft + kButtonXIncrement * 2};
-   constexpr int kCommandTableHeight {kMainHeight - kBottomSectionHeight};
+   constexpr int kCommandTableY{ 100 };
+   constexpr int kCommandTableHeight {kMainHeight - kCommandTableY - kBottomSectionHeight};
    constexpr int kLabelWidth {kFullWidth / 2};
-   constexpr int kProfileNameY {kMainHeight - kBottomSectionHeight + 110};
+   constexpr int kProfileNameY {kMainHeight - kBottomSectionHeight + 7};
    constexpr int kCommandLabelX {kMainLeft + kLabelWidth};
    constexpr int kCommandLabelY {kProfileNameY};
-   constexpr int kBottomButtonY {kMainHeight - kBottomSectionHeight + 135};
-   constexpr int kBottomButtonY2 {kMainHeight - kBottomSectionHeight + 160};
+   constexpr int kBottomButtonY {kMainHeight - kBottomSectionHeight + 35};
+   constexpr int kBottomButtonY2 {kMainHeight - kBottomSectionHeight + 65};
    constexpr auto kDefaultsFile {"default.xml"};
 } // namespace
 
@@ -86,20 +86,21 @@ void MainContentComponent::Init()
       /* Main title */
       StandardLabelSettings(title_label_);
       title_label_.setFont(juce::Font {36.f, juce::Font::bold});
-      title_label_.setComponentEffect(&title_shadow_);
-      title_label_.setBounds(kMainLeft, 10, kFullWidth, 30);
+      // title_label_.setComponentEffect(&title_shadow_);
+      title_label_.setBounds(kMainLeft-3, 10, kFullWidth, 30);
       addToLayout(&title_label_, anchorMidLeft, anchorMidRight);
       addAndMakeVisible(title_label_);
 
       /* Version label */
       StandardLabelSettings(version_label_);
+      version_label_.setFont(juce::Font{ 14.f, juce::Font::bold });
       version_label_.setBounds(kMainLeft, 40, kFullWidth, 10);
       addToLayout(&version_label_, anchorMidLeft, anchorMidRight);
       addAndMakeVisible(version_label_);
 
       /* Connection status */
       StandardLabelSettings(connection_label_);
-      connection_label_.setColour(juce::Label::textColourId, juce::Colours::black);
+      connection_label_.setColour(juce::Label::textColourId, juce::Desktop::getInstance().getDefaultLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
       connection_label_.setColour(juce::Label::backgroundColourId, juce::Colours::red);
       connection_label_.setJustificationType(juce::Justification::centred);
       connection_label_.setBounds(200, 15, kConnectionLabelWidth, kStandardHeight);
@@ -158,15 +159,9 @@ void MainContentComponent::Init()
       addToLayout(&settings_button_, anchorMidLeft, anchorMidRight);
       addAndMakeVisible(settings_button_);
       settings_button_.onClick = [this] {
-         juce::DialogWindow::LaunchOptions dialog_options;
-         dialog_options.dialogTitle = juce::translate("Settings");
-         /* create new object */
-         auto component {std::make_unique<SettingsComponent>(settings_manager_)};
-         component->Init();
-         dialog_options.content.setOwned(component.release());
-         dialog_options.content->setSize(400, 300);
-         settings_dialog_.reset(dialog_options.create());
-         settings_dialog_->setVisible(true);
+         SettingsComponent setComp(settings_manager_);
+         setComp.Init();
+         juce::DialogWindow::showModalDialog(juce::translate("Settings"), &setComp, nullptr, juce::Desktop::getInstance().getDefaultLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId), true);
       };
 
       /* Command Table */
@@ -176,10 +171,16 @@ void MainContentComponent::Init()
       addAndMakeVisible(command_table_);
 
       /* Profile name label */
+      StandardLabelSettings(profile_name_title_);
+      int profile_name_title_width = profile_name_title_.getFont().getStringWidth(profile_name_title_.getText()) + 10;
+      profile_name_title_.setBounds(kMainLeft, kProfileNameY, profile_name_title_width, kStandardHeight);
+      profile_name_title_.setJustificationType(juce::Justification::centredLeft);
+      addToLayout(&profile_name_title_, anchorMidLeft, anchorMidRight);
+      addAndMakeVisible(profile_name_title_);
+
       StandardLabelSettings(profile_name_label_);
-      profile_name_label_.setColour(juce::Label::textColourId, juce::Colours::black);
-      profile_name_label_.setBounds(kMainLeft, kProfileNameY, kLabelWidth, kStandardHeight);
-      profile_name_label_.setJustificationType(juce::Justification::centred);
+      profile_name_label_.setBounds(kMainLeft+ profile_name_title_width, kProfileNameY, kLabelWidth- profile_name_title_width, kStandardHeight);
+      profile_name_label_.setJustificationType(juce::Justification::centredLeft);
       addToLayout(&profile_name_label_, anchorMidLeft, anchorMidRight);
       addAndMakeVisible(profile_name_label_);
 
@@ -229,8 +230,7 @@ void MainContentComponent::Init()
       };
 
       /* Delete unassigned rows */
-      remove_unassigned_button_.setBounds(
-          kFirstButtonX, kBottomButtonY2, kButtonWidth, kStandardHeight);
+      remove_unassigned_button_.setBounds(kFirstButtonX, kBottomButtonY2, kButtonWidth, kStandardHeight);
       addToLayout(&remove_unassigned_button_, anchorMidLeft, anchorMidRight);
       addAndMakeVisible(remove_unassigned_button_);
       remove_unassigned_button_.onClick = [this] {
@@ -274,17 +274,6 @@ void MainContentComponent::SaveProfile() const
    if (chooser.browseForFileToSave(true)) {
       const auto selected_file {chooser.getResult().withFileExtension("xml")};
       profile_.ToXmlFile(selected_file);
-   }
-}
-
-void MainContentComponent::paint(juce::Graphics& g)
-{ //-V2009 overridden method
-   try {
-      g.fillAll(juce::Colours::white);
-   }
-   catch (const std::exception& e) {
-      MIDI2LR_E_RESPONSE;
-      throw;
    }
 }
 
@@ -357,10 +346,12 @@ void MainContentComponent::ProfileChanged(
       {
          const juce::MessageManagerLock mm_lock;
          profile_.FromXml(xml_element);
+
          command_table_.updateContent();
          command_table_.repaint();
          profile_name_label_.setText(file_name, juce::NotificationType::dontSendNotification);
       }
+
       /* Send new CC parameters to MIDI Out devices */
       lr_ipc_out_.SendCommand("FullRefresh 1\n");
 
@@ -380,7 +371,6 @@ void MainContentComponent::StandardLabelSettings(juce::Label& label_to_set)
    try {
       label_to_set.setFont(juce::Font {16.f, juce::Font::bold});
       label_to_set.setEditable(false);
-      label_to_set.setColour(juce::Label::textColourId, juce::Colours::darkgrey);
    }
    catch (const std::exception& e) {
       MIDI2LR_E_RESPONSE;
@@ -394,6 +384,7 @@ void MainContentComponent::handleAsyncUpdate()
       /* Update the last command label and set its color to green */
       command_label_.setText(last_command_, juce::NotificationType::dontSendNotification);
       command_label_.setColour(juce::Label::backgroundColourId, juce::Colours::greenyellow);
+      command_label_.setColour(juce::Label::textColourId, juce::Colour(juce::Colours::darkgrey));
       startTimer(1000);
       /* Update the command table to add and/or select row corresponding to midi command */
       command_table_.updateContent();
@@ -408,8 +399,11 @@ void MainContentComponent::handleAsyncUpdate()
 void MainContentComponent::timerCallback()
 {
    try {
-      /* reset the command label's background to white */
-      command_label_.setColour(juce::Label::backgroundColourId, juce::Colours::white);
+      /* reset the command label's background */
+      command_label_.setColour(juce::Label::backgroundColourId,
+                               juce::Desktop::getInstance().getDefaultLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
+      command_label_.setColour(juce::Label::textColourId,
+         juce::Desktop::getInstance().getDefaultLookAndFeel().findColour(juce::Label::textColourId));
       juce::Timer::stopTimer();
    }
    catch (const std::exception& e) {

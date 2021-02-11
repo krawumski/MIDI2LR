@@ -27,14 +27,22 @@
 CommandTable::CommandTable(const juce::String& component_name, CommandTableModel* model)
 try : juce
    ::TableListBox {component_name, model}
-   {
-      juce::TableListBox::setHeader(std::make_unique<juce::TableHeaderComponent>());
-      juce::TableListBox::getHeader().addColumn(juce::translate("MIDI Command"), 1, 150, 30, -1,
-          juce::TableHeaderComponent::notResizable | juce::TableHeaderComponent::sortable);
-      juce::TableListBox::getHeader().addColumn(juce::translate("LR Command"), 2, 350, 30, -1,
-          juce::TableHeaderComponent::notResizable | juce::TableHeaderComponent::sortable
-              | juce::TableHeaderComponent::sortedForwards);
-   }
+{
+   juce::TableListBox::setHeader(std::make_unique<juce::TableHeaderComponent>());
+   juce::TableListBox::getHeader().addColumn(juce::translate("MIDI Command"), 1, 150, 30, -1,
+         juce::TableHeaderComponent::notResizable | juce::TableHeaderComponent::sortable);
+   juce::TableListBox::getHeader().addColumn(juce::translate("LR Command"), 2, 350, 30, -1,
+         juce::TableHeaderComponent::notResizable | juce::TableHeaderComponent::sortable
+            | juce::TableHeaderComponent::sortedForwards);
+   juce::TableListBox::getHeader().setColour(juce::TableHeaderComponent::backgroundColourId, juce::Colour());
+   juce::Colour colour_text_on  = juce::Desktop::getInstance().getDefaultLookAndFeel().findColour(juce::TextButton::textColourOnId);
+   juce::Colour colour_bg = juce::Desktop::getInstance().getDefaultLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId);
+   juce::TableListBox::getHeader().setColour(juce::TableHeaderComponent::textColourId, colour_text_on);
+   juce::TableListBox::getHeader().setColour(juce::TableHeaderComponent::outlineColourId, juce::Colour(juce::Colours::lightgrey));
+   setColour(juce::ListBox::backgroundColourId, colour_bg);
+
+   setRowHeight(30);
+}
 catch (const std::exception& e) {
    MIDI2LR_E_RESPONSE;
    throw;
