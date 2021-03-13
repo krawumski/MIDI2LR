@@ -53,6 +53,10 @@ class SettingsManager final {
    {
       return properties_file_->getValue("profile_directory");
    }
+   [[nodiscard]] bool GetAutoRaiseCheatEnabled() const noexcept
+   {
+      return properties_file_->getBoolValue("auto_raise_cheat", false);
+   }
    // ReSharper disable CppMemberFunctionMayBeConst
    void SetAutoHideTime(int new_time) { properties_file_->setValue("autohide", new_time); }
    void SetDefaultProfile(const juce::String& default_profile)
@@ -72,6 +76,10 @@ class SettingsManager final {
    {
       properties_file_->setValue("profile_directory", profile_directory);
       profile_manager_.SetProfileDirectory(profile_directory);
+   }
+   void SetAutoRaiseCheatEnabled(bool enabled)
+   {
+      properties_file_->setValue("auto_raise_cheat", enabled);
    }
    // ReSharper restore CppMemberFunctionMayBeConst
  private:

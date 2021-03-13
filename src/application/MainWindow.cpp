@@ -23,7 +23,7 @@ MainWindow::MainWindow(const juce::String& name, const CommandSet& command_set, 
     ProfileManager& profile_manager, SettingsManager& settings_manager, LrIpcOut& lr_ipc_out,
     MidiReceiver& midi_receiver, MidiSender& midi_sender)
 try : juce
-   ::DocumentWindow {name, juce::Desktop::getInstance().getDefaultLookAndFeel().findColour(ResizableWindow::backgroundColourId),
+   ::DocumentWindow {name, juce::LookAndFeel::getDefaultLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId),
        juce::DocumentWindow::minimiseButton | juce::DocumentWindow::closeButton},
        window_content_ {std::make_unique<MainContentComponent>(command_set, profile,
            profile_manager, settings_manager, lr_ipc_out, midi_receiver, midi_sender)}

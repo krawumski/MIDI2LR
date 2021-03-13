@@ -15,18 +15,19 @@
  * see <http://www.gnu.org/licenses/>.
  *
  */
-#ifdef __cpp_lib_three_way_comparison
-#include <compare>
-#endif
 #include <map>
 #include <memory>
 #include <utility>
+#include <version>
+#ifdef __cpp_lib_three_way_comparison
+#include <compare>
+#endif
 
 #include <juce_audio_devices/juce_audio_devices.h>
 #include <juce_core/juce_core.h>
 
 class Devices {
- public:
+public:
    Devices();
    ~Devices();
    Devices(const Devices& other) = delete;
@@ -37,11 +38,12 @@ class Devices {
    [[nodiscard]] bool Enabled(const juce::MidiDeviceInfo& info, juce::String io) const;
    [[nodiscard]] bool EnabledOrNew(const juce::MidiDeviceInfo& info, const juce::String& io);
 
- private:
+private:
    struct DevInfo {
-#ifdef __cpp_lib_three_way_comparison
-      std::strong_ordering operator<=>(const DevInfo&) noexcept const = default;
-#else
+// #jr06mar21 The following lines cause things to not compile anymore on VS 16.9.0. No idea what's going on.
+//#ifdef __cpp_lib_three_way_comparison
+//      std::strong_ordering operator<=>(const DevInfo&) noexcept const = default;
+//#else
       friend bool operator==(const DevInfo& lhs, const DevInfo& rhs) noexcept
       {
          return lhs.name == rhs.name && lhs.identifier == rhs.identifier && lhs.i_o == rhs.i_o;
@@ -71,14 +73,14 @@ class Devices {
       {
          return !(lhs < rhs);
       }
-#endif
+//#endif
 
       DevInfo(const juce::MidiDeviceInfo& info, juce::String io) noexcept
-          : name {info.name}, identifier {info.identifier}, i_o {std::move(io)}
+         : name{ info.name }, identifier{ info.identifier }, i_o{ std::move(io) }
       {
       }
       DevInfo(juce::String n, juce::String i, juce::String io) noexcept
-          : name {std::move(n)}, identifier {std::move(i)}, i_o {std::move(io)}
+         : name{ std::move(n) }, identifier{ std::move(i) }, i_o{ std::move(io) }
       {
       }
       juce::String name;
@@ -87,8 +89,8 @@ class Devices {
    };
    std::map<DevInfo, bool> device_listing_;
    std::unique_ptr<juce::XmlElement> device_xml_;
-   juce::XmlElement* column_list_ {nullptr};
-   juce::XmlElement* data_list_ {nullptr};
-   int num_rows_ {0};
+   juce::XmlElement* column_list_{ nullptr };
+   juce::XmlElement* data_list_{ nullptr };
+   int num_rows_{ 0 };
 };
 #endif
