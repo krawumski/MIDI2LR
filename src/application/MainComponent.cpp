@@ -351,7 +351,7 @@ void MainContentComponent::SaveProfile() const
 void MainContentComponent::MidiCmdCallback(const rsj::MidiMessage& mm)
 {
    try {
-      /* jr10feb21 Handle note off message. */
+      /* @jr10feb21 Handle note off message. */
       if (mm.message_type_byte == rsj::MessageType::kNoteOff) {
          for (const auto& msg : profile_.setup_table_) {
             if (msg.msgId.channel == (mm.channel+1) 
@@ -366,7 +366,7 @@ void MainContentComponent::MidiCmdCallback(const rsj::MidiMessage& mm)
             cheat_window_->setVisible(false);
             cheat_window_->toBehind(getParentComponent());
          }
-         /* jr20feb21 Note off events can't be assigned to anything, so no further actions. */
+         /* @jr20feb21 Note off events can't be assigned to anything, so no further actions. */
          return;
       }
 
@@ -375,12 +375,12 @@ void MainContentComponent::MidiCmdCallback(const rsj::MidiMessage& mm)
             mm.control_number == profile_msg_.control_number &&
             settings_manager_.GetAutoRaiseCheatEnabled() == true &&
             cheat_window_) {
-            /* jr26feb21 The same key that triggered the last profile change was pressed -> raise the cheat view. */
+            /* @jr26feb21 The same key that triggered the last profile change was pressed -> raise the cheat view. */
             cheat_window_->setVisible(true);
             cheat_window_->toFront(true);
          }
 
-         /* jr26feb21 Remember the last key press (for bringing the cheat window back to front later). */
+         /* @jr26feb21 Remember the last key press (for bringing the cheat window back to front later). */
          last_msg_ = mm;
       }
 
@@ -445,12 +445,12 @@ void MainContentComponent::ProfileChanged(
       /* Send new CC parameters to MIDI Out devices */
       lr_ipc_out_.SendCommand("FullRefresh 1\n");
 
-      /* jr09feb21 Send config messages to MIDI Out device */
+      /* @jr09feb21 Send config messages to MIDI Out device */
       for (const auto& msg : profile_.setup_table_) {
          midi_sender_.Send(msg.msgId, msg.value);
       }
 
-      /* jr13feb21 Update cheat view */
+      /* @jr13feb21 Update cheat view */
       cheat_view_component_.ReadImage(settings_manager_.GetProfileDirectory(), file_name.replace(".xml", "", true));
       if (cheat_window_ && settings_manager_.GetAutoRaiseCheatEnabled()) {
          if (!cheat_window_->isVisible()) cheat_window_->setVisible(true);

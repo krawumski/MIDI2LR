@@ -40,7 +40,7 @@ public:
 
 private:
    struct DevInfo {
-// #jr06mar21 The following lines cause things to not compile anymore on VS 16.9.0. No idea what's going on.
+// @jr06mar21 The following lines cause things to not compile anymore on VS 16.9.0. No idea what's going on.
 //#ifdef __cpp_lib_three_way_comparison
 //      std::strong_ordering operator<=>(const DevInfo&) noexcept const = default;
 //#else

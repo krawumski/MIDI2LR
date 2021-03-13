@@ -262,7 +262,7 @@ void Profile::ToXmlFile(const juce::File& file)
          /* save the contents of the command map to an xml file */
          juce::XmlElement root {"settings"};
 
-         /* jr10feb21 Write the setup definitions. */
+         /* @jr10feb21 Write the setup definitions. */
          for (const auto& msg : setup_table_) {
             auto setup {std::make_unique<juce::XmlElement>("setup")};
             setup->setAttribute("channel", msg.msgId.channel);
