@@ -58,7 +58,7 @@ namespace {
    constexpr int kCommandLabelY {kProfileNameY};
    constexpr int kBottomButtonY {kMainHeight - kBottomSectionHeight + 35};
    constexpr int kBottomButtonY2 {kMainHeight - kBottomSectionHeight + 70};
-   constexpr auto kDefaultsFile {"default.xml"};
+   constexpr auto kDefaultsFile { MIDI2LR_UC_LITERAL("default.xml") };
 } // namespace
 
 MainContentComponent::MainContentComponent(const CommandSet& command_set, Profile& profile,
@@ -77,6 +77,11 @@ catch (const std::exception& e)
 {
    MIDI2LR_E_RESPONSE;
    throw;
+}
+
+MainContentComponent::~MainContentComponent()
+{
+   settings_manager_.SetDefaultProfile(profile_name_label_.getText());
 }
 
 void MainContentComponent::Init()
