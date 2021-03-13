@@ -35,11 +35,6 @@ try : juce
          juce::TableHeaderComponent::notResizable | juce::TableHeaderComponent::sortable
             | juce::TableHeaderComponent::sortedForwards);
    juce::TableListBox::getHeader().setColour(juce::TableHeaderComponent::backgroundColourId, juce::Colour());
-   juce::Colour colour_text_on  = juce::Desktop::getInstance().getDefaultLookAndFeel().findColour(juce::TextButton::textColourOnId);
-   juce::Colour colour_bg = juce::Desktop::getInstance().getDefaultLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId);
-   juce::TableListBox::getHeader().setColour(juce::TableHeaderComponent::textColourId, colour_text_on);
-   juce::TableListBox::getHeader().setColour(juce::TableHeaderComponent::outlineColourId, juce::Colour(juce::Colours::lightgrey));
-   setColour(juce::ListBox::backgroundColourId, colour_bg);
 
    setRowHeight(30);
 }

@@ -31,30 +31,33 @@
 #include "ProfileManager.h"
 #include "SettingsComponent.h"
 #include "SettingsManager.h"
+#include "CheatViewComponent.h"
+
 
 namespace {
    constexpr int kMainWidth {560}; /* equals CommandTable columns total width plus 60 */
-   constexpr int kMainHeight {700};
+   constexpr int kMainHeight {730};
    constexpr int kMainLeft {20};
-   constexpr int kBottomSectionHeight {100};
+   constexpr int kBottomSectionHeight {105};
+   constexpr int kTopGroupHeight{ 80 };
    constexpr int kSpaceBetweenButton {10};
-   constexpr int kStandardHeight {20};
+   constexpr int kStandardHeight {25};
    constexpr int kFullWidth {kMainWidth - kMainLeft * 2};
-   constexpr int kButtonWidth {(kFullWidth - kSpaceBetweenButton * 2) / 3};
+   constexpr int kButtonWidth{ static_cast<int>((kFullWidth - kSpaceBetweenButton * 2) / 3.2 ) };
    constexpr int kButtonXIncrement {kButtonWidth + kSpaceBetweenButton};
    constexpr int kConnectionLabelWidth = {kMainWidth - kMainLeft - 200};
    constexpr int kTopButtonY {65};
    constexpr int kFirstButtonX {kMainLeft};
    constexpr int kSecondButtonX {kMainLeft + kButtonXIncrement};
-   constexpr int kThirdButtonX {kMainLeft + kButtonXIncrement * 2};
-   constexpr int kCommandTableY{ 100 };
+   constexpr int kThirdButtonX {kMainLeft + kFullWidth - kButtonWidth};
+   constexpr int kCommandTableY{ 140 };
    constexpr int kCommandTableHeight {kMainHeight - kCommandTableY - kBottomSectionHeight};
    constexpr int kLabelWidth {kFullWidth / 2};
    constexpr int kProfileNameY {kMainHeight - kBottomSectionHeight + 7};
    constexpr int kCommandLabelX {kMainLeft + kLabelWidth};
    constexpr int kCommandLabelY {kProfileNameY};
    constexpr int kBottomButtonY {kMainHeight - kBottomSectionHeight + 35};
-   constexpr int kBottomButtonY2 {kMainHeight - kBottomSectionHeight + 65};
+   constexpr int kBottomButtonY2 {kMainHeight - kBottomSectionHeight + 70};
    constexpr auto kDefaultsFile {"default.xml"};
 } // namespace
 
@@ -79,6 +82,8 @@ catch (const std::exception& e)
 void MainContentComponent::Init()
 {
    try {
+      juce::Colour colour_heading(180, 180, 180);
+
       midi_receiver_.AddCallback(this, &MainContentComponent::MidiCmdCallback);
       lr_ipc_out_.AddCallback(this, &MainContentComponent::LrIpcOutCallback);
       profile_manager_.AddCallback(this, &MainContentComponent::ProfileChanged);
@@ -86,7 +91,7 @@ void MainContentComponent::Init()
       /* Main title */
       StandardLabelSettings(title_label_);
       title_label_.setFont(juce::Font {36.f, juce::Font::bold});
-      // title_label_.setComponentEffect(&title_shadow_);
+      // title_label_.setComponentEffect(&titl  e_shadow_);
       title_label_.setBounds(kMainLeft-3, 10, kFullWidth, 30);
       addToLayout(&title_label_, anchorMidLeft, anchorMidRight);
       addAndMakeVisible(title_label_);
@@ -100,15 +105,34 @@ void MainContentComponent::Init()
 
       /* Connection status */
       StandardLabelSettings(connection_label_);
-      connection_label_.setColour(juce::Label::textColourId, juce::Desktop::getInstance().getDefaultLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
+      connection_label_.setColour(juce::Label::textColourId, getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
       connection_label_.setColour(juce::Label::backgroundColourId, juce::Colours::red);
       connection_label_.setJustificationType(juce::Justification::centred);
       connection_label_.setBounds(200, 15, kConnectionLabelWidth, kStandardHeight);
       addToLayout(&connection_label_, anchorMidLeft, anchorMidRight);
       addAndMakeVisible(connection_label_);
 
-      /* Load button */
-      load_button_.setBounds(kFirstButtonX, kTopButtonY, kButtonWidth, kStandardHeight);
+      /* Profile Heading */
+      profile_load_save_label_.setBounds(kFirstButtonX, kTopButtonY-kSpaceBetweenButton, kButtonWidth, kStandardHeight);
+      profile_load_save_label_.setColour(juce::Label::textColourId, colour_heading);
+      addToLayout(&profile_load_save_label_, anchorTopLeft, anchorTopRight);
+      addAndMakeVisible(profile_load_save_label_);
+
+      juce::Font f = profile_load_save_label_.getFont();
+      juce::Path path;
+      float lineY = kTopButtonY + kSpaceBetweenButton - f.getHeight()/2;
+      path.startNewSubPath(juce::Point<float>(kFirstButtonX+static_cast<float>(f.getStringWidth(profile_load_save_label_.getText()))+10,
+         lineY));
+      path.lineTo(juce::Point<float>(kFirstButtonX+2*kButtonWidth+kSpaceBetweenButton, lineY));
+      path.closeSubPath();
+      profile_head_line_.setPath(path);
+      profile_head_line_.setStrokeThickness(0.3f);
+      profile_head_line_.setStrokeFill(juce::FillType(colour_heading));
+      addToLayout(&profile_head_line_, anchorTopLeft, anchorTopRight);
+      addAndMakeVisible(profile_head_line_);
+
+      /* Profile load button */
+      load_button_.setBounds(kFirstButtonX, kTopButtonY + static_cast<int>(1.5 * kSpaceBetweenButton), kButtonWidth, kStandardHeight);
       addToLayout(&load_button_, anchorMidLeft, anchorMidRight);
       addAndMakeVisible(load_button_);
       load_button_.onClick = [this] {
@@ -140,6 +164,7 @@ void MainContentComponent::Init()
                if (!directory_saved) /* haven't saved a directory yet */
                   [[unlikely]] settings_manager_.SetProfileDirectory(
                       new_profile.getParentDirectory().getFullPathName());
+               cheat_view_component_.ReadImage(settings_manager_.GetProfileDirectory(), new_profile.getFileName());
             }
             else {
                rsj::Log(fmt::format(FMT_STRING("Unable to load profile {}."),
@@ -148,20 +173,54 @@ void MainContentComponent::Init()
          }
       };
 
-      /* Save button */
-      save_button_.setBounds(kSecondButtonX, kTopButtonY, kButtonWidth, kStandardHeight);
+      /* Profile save button */
+      save_button_.setBounds(kSecondButtonX, kTopButtonY + static_cast<int>(1.5 * kSpaceBetweenButton), kButtonWidth, kStandardHeight);
+
       addToLayout(&save_button_, anchorMidLeft, anchorMidRight);
       addAndMakeVisible(save_button_);
       save_button_.onClick = [this] { SaveProfile(); };
 
-      /* Settings button */
-      settings_button_.setBounds(kThirdButtonX, kTopButtonY, kButtonWidth, kStandardHeight);
-      addToLayout(&settings_button_, anchorMidLeft, anchorMidRight);
-      addAndMakeVisible(settings_button_);
-      settings_button_.onClick = [this] {
-         SettingsComponent setComp(settings_manager_);
-         setComp.Init();
-         juce::DialogWindow::showModalDialog(juce::translate("Settings"), &setComp, nullptr, juce::Desktop::getInstance().getDefaultLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId), true);
+      /* Create cheat view window */
+      cheat_window_.reset(new CheatViewWindow(juce::translate("Cheat View")));
+      cheat_window_->setContentNonOwned(&cheat_view_component_, true);
+      cheat_window_->setVisible(false);
+
+      /* Cheat View Heading */
+      cheat_view_label_.setBounds(kThirdButtonX, kTopButtonY-kSpaceBetweenButton, kButtonWidth, kStandardHeight);
+      cheat_view_label_.setColour(juce::Label::textColourId, colour_heading);
+      addToLayout(&cheat_view_label_, anchorTopLeft, anchorTopRight);
+      addAndMakeVisible(cheat_view_label_);
+
+      path.clear();
+      path.startNewSubPath(juce::Point<float>(kThirdButtonX + static_cast<float>(f.getStringWidth(cheat_view_label_.getText())) + 10,
+         lineY));
+      path.lineTo(juce::Point<float>(kThirdButtonX + kButtonWidth, lineY));
+      path.closeSubPath();
+      cheat_head_line_.setPath(path);
+      cheat_head_line_.setStrokeThickness(0.3f);
+      cheat_head_line_.setStrokeFill(juce::FillType(colour_heading));
+      addToLayout(&cheat_head_line_, anchorTopLeft, anchorTopRight);
+      addAndMakeVisible(cheat_head_line_);
+
+
+      /* Show cheat button */
+      cheat_show_button_.setBounds(kThirdButtonX, kTopButtonY+static_cast<int>(1.5 * kSpaceBetweenButton),
+         kButtonWidth, kStandardHeight);
+      addToLayout(&cheat_show_button_, anchorMidLeft, anchorMidRight);
+      addAndMakeVisible(cheat_show_button_);
+
+      cheat_show_button_.onClick = [this] {
+         cheat_window_->setVisible(true);
+      };
+
+      cheat_raise_enabled_.setToggleState(settings_manager_.GetAutoRaiseCheatEnabled(), juce::NotificationType::dontSendNotification);
+      cheat_raise_enabled_.setBounds(kThirdButtonX, kTopButtonY + kStandardHeight + static_cast<int>(1.8*kSpaceBetweenButton), kButtonWidth, kStandardHeight);
+      addToLayout(&cheat_raise_enabled_, anchorTopLeft, anchorTopRight);
+      addAndMakeVisible(cheat_raise_enabled_);
+      cheat_raise_enabled_.onClick = [this] {
+         const auto cheat_raise_state{ cheat_raise_enabled_.getToggleState() };
+         settings_manager_.SetAutoRaiseCheatEnabled(cheat_raise_state);
+         rsj::Log(cheat_raise_state ? "Cheat auto raise set to enabled." : "Cheat auto raise set to disabled.");
       };
 
       /* Command Table */
@@ -221,10 +280,12 @@ void MainContentComponent::Init()
       disconnect_button_.onClick = [this] {
          if (disconnect_button_.getToggleState()) {
             lr_ipc_out_.SendingStop();
+            disconnect_button_.setButtonText(juce::translate("Resume sending to LR"));
             rsj::Log("Sending halted.");
          }
          else {
             lr_ipc_out_.SendingRestart();
+            disconnect_button_.setButtonText(juce::translate("Halt sending to LR"));
             rsj::Log("Sending restarted.");
          }
       };
@@ -236,6 +297,16 @@ void MainContentComponent::Init()
       remove_unassigned_button_.onClick = [this] {
          profile_.RemoveUnassignedMessages();
          command_table_.updateContent();
+      };
+
+      /* Settings button */
+      settings_button_.setBounds(kThirdButtonX, kBottomButtonY2, kButtonWidth, kStandardHeight);
+      addToLayout(&settings_button_, anchorMidLeft, anchorMidRight);
+      addAndMakeVisible(settings_button_);
+      settings_button_.onClick = [this] {
+         SettingsComponent setComp(settings_manager_);
+         setComp.Init();
+         juce::DialogWindow::showModalDialog(juce::translate("Settings"), &setComp, nullptr, getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId), true);
       };
 
       /* Try to load a default.xml if the user has not set a profile directory */
@@ -289,9 +360,28 @@ void MainContentComponent::MidiCmdCallback(const rsj::MidiMessage& mm)
                && msg.value == 1) {
                /* jr10feb21 Send note again if the key is set to be lit (in case the controller turned it off on the note off event). */
                midi_sender_.Send(msg.msgId, msg.value);
-               return;
             }
          }
+         if (cheat_window_ && cheat_window_->isVisible() && settings_manager_.GetAutoRaiseCheatEnabled()) {
+            cheat_window_->setVisible(false);
+            cheat_window_->toBehind(getParentComponent());
+         }
+         /* jr20feb21 Note off events can't be assigned to anything, so no further actions. */
+         return;
+      }
+
+      if (mm.message_type_byte == rsj::MessageType::kNoteOn) {
+         if (mm.channel == profile_msg_.channel &&
+            mm.control_number == profile_msg_.control_number &&
+            settings_manager_.GetAutoRaiseCheatEnabled() == true &&
+            cheat_window_) {
+            /* jr26feb21 The same key that triggered the last profile change was pressed -> raise the cheat view. */
+            cheat_window_->setVisible(true);
+            cheat_window_->toFront(true);
+         }
+
+         /* jr26feb21 Remember the last key press (for bringing the cheat window back to front later). */
+         last_msg_ = mm;
       }
 
       /* Display the MIDI parameters and add/highlight row in table corresponding to the message msg
@@ -359,6 +449,14 @@ void MainContentComponent::ProfileChanged(
       for (const auto& msg : profile_.setup_table_) {
          midi_sender_.Send(msg.msgId, msg.value);
       }
+
+      /* jr13feb21 Update cheat view */
+      cheat_view_component_.ReadImage(settings_manager_.GetProfileDirectory(), file_name.replace(".xml", "", true));
+      if (cheat_window_ && settings_manager_.GetAutoRaiseCheatEnabled()) {
+         if (!cheat_window_->isVisible()) cheat_window_->setVisible(true);
+         cheat_window_->toFront(true);
+      }
+      profile_msg_ = last_msg_;
    }
    catch (const std::exception& e) {
       MIDI2LR_E_RESPONSE;
@@ -400,10 +498,8 @@ void MainContentComponent::timerCallback()
 {
    try {
       /* reset the command label's background */
-      command_label_.setColour(juce::Label::backgroundColourId,
-                               juce::Desktop::getInstance().getDefaultLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
-      command_label_.setColour(juce::Label::textColourId,
-         juce::Desktop::getInstance().getDefaultLookAndFeel().findColour(juce::Label::textColourId));
+      command_label_.setColour(juce::Label::backgroundColourId, getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
+      command_label_.setColour(juce::Label::textColourId, getLookAndFeel().findColour(juce::Label::textColourId));
       juce::Timer::stopTimer();
    }
    catch (const std::exception& e) {

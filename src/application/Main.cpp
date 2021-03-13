@@ -71,6 +71,16 @@ namespace fs = std::filesystem;
 namespace {
    class LookAndFeelMIDI2LR final : public juce::LookAndFeel_V4 {
     public:
+      LookAndFeelMIDI2LR()
+      {
+         setColour(juce::ResizableWindow::backgroundColourId, juce::Colour(70, 70, 70));
+         setColour(juce::TextButton::buttonColourId, juce::Colour(60, 60, 60));
+         setColour(juce::TableHeaderComponent::textColourId, juce::Colour(180, 180, 180));
+         setColour(juce::TableHeaderComponent::outlineColourId, juce::Colour(180, 180, 180));
+         setColour(juce::ListBox::backgroundColourId, juce::Colour(70, 70, 70));
+
+         getCurrentColourScheme().setUIColour(ColourScheme::widgetBackground, juce::Colour(50, 50, 50));    /* Window title bar background colour */
+      }
       juce::Font getTextButtonFont(juce::TextButton&, const int button_height) override
       {
          return juce::Font(std::min(16.0f, static_cast<float>(button_height) * 0.7f));
@@ -154,7 +164,7 @@ class MIDI2LRApplication final : public juce::JUCEApplication {
    void initialise(const juce::String& command_line) override
    {
       try {
-         /*Called when the application starts. This will be called once to let the application do
+         /* Called when the application starts. This will be called once to let the application do
           * whatever initialization it needs, create its windows, etc. After the method returns, the
           * normal event - dispatch loop will be run, until the quit() method is called, at which
           * point the shutdown() method will be called to let the application clear up anything it
@@ -166,6 +176,7 @@ class MIDI2LRApplication final : public juce::JUCEApplication {
             CCoptions::LinkToControlsModel(&controls_model_);
             PWoptions::LinkToControlsModel(&controls_model_);
             juce::LookAndFeel::setDefaultLookAndFeel(&look_feel_);
+
             /* set language and load appropriate fonts and files */
             SetAppFont();
             LoadControlsModel();

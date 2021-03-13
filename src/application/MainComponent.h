@@ -24,7 +24,10 @@
 
 #include "CommandTable.h"
 #include "CommandTableModel.h"
+#include "CheatViewWindow.h"
+#include "CheatViewComponent.h"
 #include "falco/ResizableLayout.h"
+
 class CommandSet;
 class LrIpcOut;
 class MidiReceiver;
@@ -32,6 +35,7 @@ class MidiSender;
 class Profile;
 class ProfileManager;
 class SettingsManager;
+
 namespace rsj {
    struct MidiMessage;
 }
@@ -73,13 +77,21 @@ class MainContentComponent final :
    juce::Label title_label_ {"Title", "MIDI2LR"};
    juce::Label version_label_ {"Version", juce::String {ProjectInfo::versionString}};
    juce::String last_command_;
-   juce::TextButton disconnect_button_ {juce::translate("Halt sending to Lightroom")};
+   juce::TextButton disconnect_button_ {juce::translate("Halt sending to LR")};
    juce::TextButton load_button_ {juce::translate("Load")};
    juce::TextButton remove_row_button_ {juce::translate("Clear ALL rows")};
    juce::TextButton remove_unassigned_button_ {juce::translate("Remove unassigned rows")};
    juce::TextButton rescan_button_ {juce::translate("Rescan MIDI devices")};
    juce::TextButton save_button_ {juce::translate("Save")};
-   juce::TextButton settings_button_ {juce::translate("Settings")};
+   juce::TextButton settings_button_{ juce::translate("Settings") };
+   juce::TextButton cheat_show_button_{ juce::translate("Show") };
+   juce::ToggleButton cheat_raise_enabled_{ juce::translate("Auto Raise") };
+   juce::Label profile_load_save_label_{"ProfileLoadSave", juce::translate(juce::translate("Profile"))};
+   juce::DrawablePath profile_head_line_;
+   juce::Label cheat_view_label_{"CheatView", juce::translate(juce::translate("Cheat View"))};
+   juce::DrawablePath cheat_head_line_;
+
+
    LrIpcOut& lr_ipc_out_;
    MidiReceiver& midi_receiver_;
    MidiSender& midi_sender_;
@@ -87,7 +99,11 @@ class MainContentComponent final :
    ProfileManager& profile_manager_;
    SettingsManager& settings_manager_;
    size_t row_to_select_ {0};
-   std::unique_ptr<juce::DialogWindow> settings_dialog_;
+   CheatViewComponent cheat_view_component_;
+   std::unique_ptr<CheatViewWindow> cheat_window_;
+
+   rsj::MidiMessage last_msg_, profile_msg_;
+
 };
 
 #endif

@@ -47,7 +47,7 @@ void CommandMenu::clicked(const juce::ModifierKeys& modifiers)
             /* convert 1-based to 0-based */
             ccopt.BindToControl(message_.channel - 1, message_.control_number);
             juce::DialogWindow::showModalDialog(
-               juce::translate("Adjust CC dialog"), &ccopt, nullptr, juce::Desktop::getInstance().getDefaultLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId), true);
+               juce::translate("Adjust CC dialog"), &ccopt, nullptr, getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId), true);
             break;
          }
          case rsj::MessageType::kPw: {

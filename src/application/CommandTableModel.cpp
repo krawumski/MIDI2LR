@@ -39,7 +39,7 @@ void CommandTableModel::paintCell(juce::Graphics& g, int row_number, const int c
     * may be greater than the number of rows in your list, so be careful that you don't assume it's
     * less than getNumRows(). */
    try {
-      g.setColour(juce::Desktop::getInstance().getDefaultLookAndFeel().findColour(juce::Label::textColourId));
+      g.setColour(juce::LookAndFeel::getDefaultLookAndFeel().findColour(juce::Label::textColourId));
       g.setFont(std::min(16.0f, static_cast<float>(height) * 0.7f));
       if (column_id == 1) {
          /* write the MIDI message in the MIDI command column */
