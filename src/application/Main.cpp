@@ -75,7 +75,7 @@ namespace {
    constexpr auto kDefaultsFile {MIDI2LR_UC_LITERAL("default.xml")};
 
    class LookAndFeelMIDI2LR final : public juce::LookAndFeel_V4 {
-    public:
+   public:
       LookAndFeelMIDI2LR()
       {
          setColour(juce::ResizableWindow::backgroundColourId, juce::Colour(70, 70, 70));
@@ -91,13 +91,13 @@ namespace {
       LookAndFeelMIDI2LR(LookAndFeelMIDI2LR&& s) = delete;
       LookAndFeelMIDI2LR& operator=(const LookAndFeelMIDI2LR& s) = delete;
       LookAndFeelMIDI2LR& operator=(LookAndFeelMIDI2LR&& s) = delete;
-      
+
       juce::Font getTextButtonFont(juce::TextButton&, const int button_height) override
       {
          return juce::Font(std::min(16.0f, static_cast<float>(button_height) * 0.7f));
       }
    };
-
+   
    class SetLogger {
     public:
       SetLogger() noexcept
@@ -515,7 +515,7 @@ class MIDI2LRApplication final : public juce::JUCEApplication {
    ProfileManager profile_manager_ {controls_model_, profile_, lr_ipc_out_, midi_receiver_};
    LrIpcIn lr_ipc_in_ {controls_model_, profile_manager_, profile_, midi_sender_, io_context_};
    SettingsManager settings_manager_ {profile_manager_, lr_ipc_out_};
-   [[maybe_unused]] const LookAndFeelMIDI2LR look_feel_;
+   LookAndFeelMIDI2LR look_feel_;
    std::unique_ptr<MainWindow> main_window_ {nullptr};
    VersionChecker version_checker_ {settings_manager_};
 };
